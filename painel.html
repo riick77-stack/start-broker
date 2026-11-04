@@ -24,13 +24,19 @@ header{position:sticky;top:env(safe-area-inset-top,0px);z-index:40;background:#0
 .acc b{font:800 1.15rem Sora,sans-serif}
 .sm{padding:7px 14px;background:transparent;border:1px solid var(--ln);border-radius:6px;font-weight:700;font-size:.85rem}
 .sm:hover{border-color:var(--y)}
-.pn{display:grid;grid-template-columns:210px 1fr 300px;gap:14px;padding:14px;max-width:1500px;margin:0 auto}
+.dep{padding:8px 18px;background:var(--y);color:#000;border:0;border-radius:6px;font-weight:800}
+.dep:hover{filter:brightness(1.1)}
+.ct{margin-left:auto;display:flex;gap:6px}
+.ct button{padding:6px 14px;background:var(--s2);border:1px solid var(--ln);border-radius:6px;font-weight:700;font-size:.8rem}
+.ct button.on{background:var(--y);border-color:var(--y);color:#000}
+.go small{font:800 .95rem Manrope,sans-serif}
+.pn{display:grid;grid-template-columns:1fr 300px;gap:14px;padding:14px;max-width:1500px;margin:0 auto}
 .box{background:var(--s1);border:1px solid var(--ln);border-radius:8px;padding:14px}
-#al{display:flex;flex-direction:column;gap:4px}
-#al button{display:flex;justify-content:space-between;align-items:center;gap:8px;background:0;border:0;border-left:3px solid transparent;padding:9px 10px;text-align:left;border-radius:0 6px 6px 0}
+#al{display:flex;gap:4px;overflow-x:auto;padding:6px 6px 0;grid-column:1/-1}
+#al button{flex:none;display:flex;align-items:center;gap:12px;background:0;border:0;border-bottom:3px solid transparent;padding:8px 14px;text-align:left;border-radius:6px 6px 0 0}
 #al button:hover{background:var(--s2)}
-#al button.on{background:var(--s2);border-left-color:var(--y)}
-#al b{display:block;font-size:.92rem}
+#al button.on{background:var(--s2);border-bottom-color:var(--y)}
+#al b{display:block;font-size:.9rem}
 #al span{font-size:.78rem}
 #al .pr{text-align:right}
 .g{color:var(--up)}.r{color:var(--dn)}
@@ -50,7 +56,7 @@ input:focus{border-color:var(--y);outline:0}
 .seg button.on{background:var(--y);border-color:var(--y);color:#000}
 .info{display:flex;justify-content:space-between;margin-top:12px;color:var(--mu);font-size:.9rem}
 .info b{color:var(--tx)}
-.go{display:block;width:100%;padding:14px;margin-top:10px;border:0;border-radius:6px;font:800 1rem Sora,sans-serif;color:#000}
+.go{display:flex;justify-content:space-between;align-items:center;width:100%;padding:17px 18px;margin-top:10px;border:0;border-radius:6px;font:800 1.05rem Sora,sans-serif;color:#000}
 .go:first-of-type{margin-top:16px}
 .go.up{background:var(--up)}.go.dn{background:var(--dn)}
 .go:hover{filter:brightness(1.1)}
@@ -69,10 +75,7 @@ th{color:var(--mu);font-weight:600;font-size:.8rem}
 #ts.on{opacity:1}
 @media(max-width:980px){
 .pn{grid-template-columns:1fr}
-#al{flex-direction:row;overflow-x:auto}
-#al button{flex:none;border-left:0;border-bottom:3px solid transparent;border-radius:6px 6px 0 0}
-#al button.on{border-bottom-color:var(--y)}
-canvas{height:280px}
+canvas{height:300px}
 }
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
@@ -85,15 +88,16 @@ canvas{height:280px}
 <span class="pill">Conta demo</span>
 <div><small>Saldo</small><b id="bal"></b></div>
 <button class="sm" id="rst">Recarregar demo</button>
+<button class="dep" id="dp">Depositar</button>
 <a class="sm" href="index.html" id="out">Sair</a>
 </div>
 </header>
 
 <main class="pn">
-<aside class="box"><h3>Ativos</h3><div id="al"></div></aside>
+<nav class="box" id="al" aria-label="Ativos"></nav>
 
 <section class="box">
-<div class="hd"><b id="an"></b><span class="px" id="ap"></span><span id="ac"></span></div>
+<div class="hd"><b id="an"></b><span class="px" id="ap"></span><span id="ac"></span><div class="ct"><button id="c1" class="on">Velas</button><button id="c2">Linha</button></div></div>
 <canvas id="cv" aria-label="Gráfico de preço do ativo selecionado"></canvas>
 </section>
 
@@ -106,8 +110,8 @@ canvas{height:280px}
 <div class="seg" id="tm"><button data-s="30" class="on">30 s</button><button data-s="60">1 min</button><button data-s="300">5 min</button></div>
 <div class="info"><span>Retorno</span><b id="rt"></b></div>
 <div class="info"><span>Lucro se acertar</span><b class="g" id="lc"></b></div>
-<button class="go up" id="bu">Acima</button>
-<button class="go dn" id="bd">Abaixo</button>
+<button class="go up" id="bu"><span>▲ Acima</span><small class="p">+85%</small></button>
+<button class="go dn" id="bd"><span>▼ Abaixo</span><small class="p">+85%</small></button>
 <p class="note">Acima: o preço no vencimento fica maior que o de entrada. Abaixo: fica menor. Em caso de empate, o valor é devolvido.</p>
 </aside>
 
@@ -132,12 +136,12 @@ $('out').onclick=function(){try{localStorage.removeItem('sb_user')}catch(e){}};
 var A=[
 {n:'EUR/USD',p:1.085,d:4,v:.00018},{n:'GBP/USD',p:1.27,d:4,v:.0002},{n:'USD/BRL',p:5.45,d:4,v:.0012},
 {n:'BTC/USD',p:68000,d:2,v:45},{n:'ETH/USD',p:3400,d:2,v:3},{n:'Ouro',p:2350,d:2,v:.9},{n:'Petróleo',p:78,d:2,v:.06}];
-var PAY=.85,N=160,START=10000,sel=0,sec=30,bal=START,open=[],hist=[],tab=1,tt;
+var PAY=.85,N=160,START=10000,sel=0,sec=30,bal=START,open=[],hist=[],tab=1,tt,cand=true;
 
 try{var s=JSON.parse(localStorage.getItem('sb_demo'));if(s){bal=s.bal;hist=s.hist||[]}}catch(e){}
 function save(){try{localStorage.setItem('sb_demo',JSON.stringify({bal:bal,hist:hist.slice(0,40)}))}catch(e){}}
 
-A.forEach(function(a){a.o=a.p;a.h=[];for(var i=0;i<N;i++){a.p+=(Math.random()-.5)*2*a.v;a.h.push(a.p)}a.o=a.h[0]});
+A.forEach(function(a){a.o=a.p;a.h=[];for(var i=0;i<N;i++){a.p+=(Math.random()-.5)*2*a.v;a.h.push(a.p)}a.o=a.h[0];a.c=[];a.k=0;for(var j=0;j<N;j+=5){var g=a.h.slice(j,j+5);a.c.push({o:g[0],h:Math.max.apply(0,g),l:Math.min.apply(0,g),c:g[g.length-1]})}});
 
 var nf=function(v,d){return v.toLocaleString('pt-BR',{minimumFractionDigits:d,maximumFractionDigits:d})};
 var f=function(a,v){return nf(v,a.d)};
@@ -157,7 +161,9 @@ var cv=$('cv'),cx=cv.getContext('2d');
 function draw(){var r=cv.getBoundingClientRect(),dp=window.devicePixelRatio||1;
 if(cv.width!==Math.round(r.width*dp)||cv.height!==Math.round(r.height*dp)){cv.width=Math.round(r.width*dp);cv.height=Math.round(r.height*dp)}
 cx.setTransform(dp,0,0,dp,0,0);cx.clearRect(0,0,r.width,r.height);
-var W=r.width,H=r.height,a=A[sel],h=a.h,mn=Math.min.apply(0,h),mx=Math.max.apply(0,h),RM=84;
+var W=r.width,H=r.height,a=A[sel],h=a.h,RM=84,rg=h;
+if(cand){rg=[];a.c.forEach(function(c){rg.push(c.h,c.l)})}
+var mn=Math.min.apply(0,rg),mx=Math.max.apply(0,rg);
 var mine=open.filter(function(t){return t.a===sel});
 mine.forEach(function(t){mn=Math.min(mn,t.e);mx=Math.max(mx,t.e)});
 var pad=(mx-mn)*.12||a.v;mn-=pad;mx+=pad;
@@ -167,10 +173,16 @@ for(var k=0;k<=4;k++){var v=mn+(mx-mn)*k/4,y=Y(v);cx.strokeStyle='#1e1e1e';cx.be
 cx.fillStyle='#8a8a84';cx.fillText(f(a,v),W-RM+10,Math.min(H-8,Math.max(8,y)))}
 mine.forEach(function(t){var y=Y(t.e),c=t.d>0?'#2fd16f':'#ff4d4d';cx.strokeStyle=c;cx.setLineDash([6,5]);cx.beginPath();cx.moveTo(0,y);cx.lineTo(W-RM+6,y);cx.stroke();cx.setLineDash([]);
 cx.fillStyle=c;cx.fillRect(W-RM+6,y-9,RM-6,18);cx.fillStyle='#000';cx.fillText((t.d>0?'▲ ':'▼ ')+f(a,t.e),W-RM+9,y)});
-cx.strokeStyle='#ffc400';cx.lineWidth=2.2;cx.lineJoin='round';cx.beginPath();
+var ly=Y(a.p);
+if(cand){var cs=a.c,cw=(W-RM)/60,bw=Math.max(2,cw*.62);
+cs.forEach(function(c,i){var x=(60-cs.length+i)*cw+cw/2,col=c.c>=c.o?'#2fd16f':'#ff4d4d';
+cx.strokeStyle=col;cx.fillStyle=col;cx.lineWidth=1.3;cx.beginPath();cx.moveTo(x,Y(c.h));cx.lineTo(x,Y(c.l));cx.stroke();
+var y1=Y(Math.max(c.o,c.c)),y2=Y(Math.min(c.o,c.c));cx.fillRect(x-bw/2,y1,bw,Math.max(1.5,y2-y1))});
+cx.strokeStyle='#ffc400';cx.lineWidth=1;cx.setLineDash([2,3]);cx.beginPath();cx.moveTo(0,ly);cx.lineTo(W-RM+6,ly);cx.stroke();cx.setLineDash([])}
+else{cx.strokeStyle='#ffc400';cx.lineWidth=2.2;cx.lineJoin='round';cx.beginPath();
 h.forEach(function(v,i){i?cx.lineTo(X(i),Y(v)):cx.moveTo(X(i),Y(v))});cx.stroke();
-var ly=Y(a.p);cx.fillStyle='#ffc400';cx.beginPath();cx.arc(X(N-1),ly,4,0,7);cx.fill();
-cx.fillRect(W-RM+6,ly-10,RM-6,20);cx.fillStyle='#000';cx.font='700 12px Manrope,sans-serif';cx.fillText(f(a,a.p),W-RM+9,ly)}
+cx.fillStyle='#ffc400';cx.beginPath();cx.arc(X(N-1),ly,4,0,7);cx.fill()}
+cx.fillStyle='#ffc400';cx.fillRect(W-RM+6,ly-10,RM-6,20);cx.fillStyle='#000';cx.font='700 12px Manrope,sans-serif';cx.fillText(f(a,a.p),W-RM+9,ly)}
 
 function tables(){
 $('t1').textContent='Abertas ('+open.length+')';
@@ -180,10 +192,11 @@ $('b2').innerHTML=hist.length?hist.map(function(t){var a=A[t.a],c=t.r>0?'g':t.r<
 return '<tr><td>'+a.n+'</td><td class="'+(t.d>0?'g':'r')+'">'+(t.d>0?'Acima':'Abaixo')+'</td><td>'+money(t.v)+'</td><td>'+f(a,t.e)+'</td><td>'+f(a,t.c)+'</td><td class="'+c+'">'+(t.r>0?'Ganhou +'+money(t.r):t.r<0?'Perdeu −'+money(-t.r):'Empate (valor devolvido)')+'</td></tr>'}).join(''):'<tr><td colspan="6" class="emp">Seu histórico aparece aqui depois da primeira operação.</td></tr>'}
 
 function money2(){$('bal').textContent=money(bal)}
-function est(){var v=+$('v').value||0;$('rt').textContent=Math.round(PAY*100)+'%';$('lc').textContent='+'+money(v*PAY)}
+function est(){var v=+$('v').value||0;$('rt').textContent=Math.round(PAY*100)+'%';document.querySelectorAll('.go .p').forEach(function(e){e.textContent='+'+Math.round(PAY*100)+'%'});$('lc').textContent='+'+money(v*PAY)}
 
 function tick(){
-A.forEach(function(a){a.p=Math.max(a.v*20,a.p+(Math.random()-.5)*2*a.v);a.h.push(a.p);a.h.shift()});
+A.forEach(function(a){a.p=Math.max(a.v*20,a.p+(Math.random()-.5)*2*a.v);a.h.push(a.p);a.h.shift();a.k++;var L=a.c[a.c.length-1];
+if(a.k%5===0){a.c.push({o:L.c,h:Math.max(L.c,a.p),l:Math.min(L.c,a.p),c:a.p});if(a.c.length>60)a.c.shift()}else{L.c=a.p;L.h=Math.max(L.h,a.p);L.l=Math.min(L.l,a.p)}});
 var now=Date.now(),changed=false;
 open=open.filter(function(t){if(now<t.x)return true;
 var a=A[t.a],c=+a.p.toFixed(a.d),res=c===t.e?0:((c-t.e)*t.d>0?t.v*PAY:-t.v);
@@ -211,6 +224,9 @@ $('h5').textContent=n===1?'Preço atual':'Fechamento';$('h6').textContent=n===1?
 $('t1').onclick=function(){setTab(1)};$('t2').onclick=function(){setTab(2)};
 
 $('rst').onclick=function(){bal=START;save();money2();toast('Saldo demo restaurado para '+money(START)+'.')};
+function setC(v){cand=v;$('c1').classList.toggle('on',v);$('c2').classList.toggle('on',!v);draw()}
+$('c1').onclick=function(){setC(true)};$('c2').onclick=function(){setC(false)};
+$('dp').onclick=function(){toast('Os depósitos ficam disponíveis na conta real, depois de conectar o servidor e o gateway de pagamento.')};
 addEventListener('resize',draw);
 
 money2();est();list();head();tables();draw();
